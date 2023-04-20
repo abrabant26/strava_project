@@ -1,0 +1,8 @@
+import mysql.connector
+
+nx = mysql.connector.connect(
+    host="ab-strava-data.cluster-cxs9osnnrcdx.us-east-1.rds.amazonaws.com",
+    user="abrabant26",
+    password="Hermione26",
+    database="ab-strava-data-instance-1"
+)
