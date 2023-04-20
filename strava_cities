@@ -65,27 +65,30 @@ def add_coordinates(data):
             activity["states"] = states
             outside_activities.append(activity)
     print(outside_activities[0]["map_coordinates"][0])
+    print(outside_activities[0]["name"])
     print("got coordinates!")
     return outside_activities
 
 add_coordinates(data)
 
-# def prepare_output(outside_activities):
-#     all_activities = []
-#     for activity in data:
+def prepare_output(outside_activities):
+    all_activities = []
+    for activity in outside_activities:
 
-#         activity_data = {}
-#         activity_data['name'] = activity['name']
-#         activity_data['date'] = activity['start_date_local']
-#         activity_data['distance'] = activity['distance']
-#         activity_data['moving_time'] = activity['moving_time']
-#         activity_data['towns_cities_crossed'] = activity['town_cities']
-#         activity_data['num_towns_citites'] = len(activity['town_cities'])
-#         activity_data['states_crossed'] = activity['states']
-#         activity_data['num_states'] = len(activity['states'])
-#         all_activities.append(activity_data)
+        activity_data = {}
+        activity_data['name'] = activity['name']
+        activity_data['date'] = activity['start_date_local']
+        activity_data['distance'] = activity['distance']
+        activity_data['moving_time'] = activity['moving_time']
+        activity_data['towns_cities_crossed'] = activity['town_cities']
+        activity_data['num_towns_citites'] = len(activity['town_cities'])
+        activity_data['states_crossed'] = activity['states']
+        activity_data['num_states'] = len(activity['states'])
+        all_activities.append(activity_data)
 
-#     print("done formating data!")
-#     return all_activities
+    print("done formating data!")
+    return all_activities
 
-# prepare_output(outside_activities)
+prepare_output(data)
+
+endpoint = "ab-strava-data.cluster-cxs9osnnrcdx.us-east-1.rds.amazonaws.com"
