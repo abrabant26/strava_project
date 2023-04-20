@@ -2,6 +2,7 @@ import requests
 import urllib3
 import polyline
 from geopy.geocoders import Nominatim
+import pandas as pd
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -69,13 +70,13 @@ def add_coordinates(data):
     print("got coordinates!")
     return outside_activities
 
-add_coordinates(data)
+outside_activities = add_coordinates(data)
 
 def prepare_output(outside_activities):
     all_activities = []
     for activity in outside_activities:
-
         activity_data = {}
+        activity_data['id']= activity['id']
         activity_data['name'] = activity['name']
         activity_data['date'] = activity['start_date_local']
         activity_data['distance'] = activity['distance']
@@ -85,10 +86,10 @@ def prepare_output(outside_activities):
         activity_data['states_crossed'] = activity['states']
         activity_data['num_states'] = len(activity['states'])
         all_activities.append(activity_data)
-
+    all_activities = pd.DataFrame.from_dict(all_activities)
+    print(all_activities)
     print("done formating data!")
+
     return all_activities
 
-prepare_output(data)
-
-endpoint = "ab-strava-data.cluster-cxs9osnnrcdx.us-east-1.rds.amazonaws.com"
+prepare_output(outside_activities)
