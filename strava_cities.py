@@ -76,7 +76,7 @@ def prepare_output(outside_activities):
     all_activities = []
     for activity in outside_activities:
         activity_data = {}
-        activity_data['id']= activity['id']
+        activity_data['activity_id']= activity['id']
         activity_data['name'] = activity['name']
         activity_data['date'] = activity['start_date_local']
         activity_data['distance'] = activity['distance']

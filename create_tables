@@ -1,8 +1,14 @@
-import mysql.connector
+import pymysql
 
-nx = mysql.connector.connect(
+table_fields = "(id INT AUTO_INCREMENT PRIMARY KEY, acitvity_id BIGINT, name VARCHAR(255), date DATETIME, distance FLOAT(10,2), moving_time FLOAT(10,2), towns_cities_crossed VARCHAR(255), num_towns_cities INT, states_crossed VARCHAR(255), num_states INT)"
+
+connection = pymysql.connect(
     host="ab-strava-data.cluster-cxs9osnnrcdx.us-east-1.rds.amazonaws.com",
     user="abrabant26",
-    password="Hermione26",
-    database="ab-strava-data-instance-1"
+    password="Hermione26!",
+    database="sys"
 )
+
+cursor = connection.cursor()
+
+cursor.execute("CREATE TABLE activities" + table_fields)
