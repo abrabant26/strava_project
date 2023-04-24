@@ -1,14 +1,23 @@
 import pymysql
+from sqlalchemy import create_engine
 
-table_fields = "(id INT AUTO_INCREMENT PRIMARY KEY, acitvity_id BIGINT, name VARCHAR(255), date DATETIME, distance FLOAT(10,2), moving_time FLOAT(10,2), towns_cities_crossed VARCHAR(255), num_towns_cities INT, states_crossed VARCHAR(255), num_states INT)"
+def connect_to_db():
+    connection = pymysql.connect(
+        host="ab-strava-data.cluster-cxs9osnnrcdx.us-east-1.rds.amazonaws.com",
+        user="abrabant26",
+        password="Hermione26!",
+        database="sys"
+    )
 
-connection = pymysql.connect(
-    host="ab-strava-data.cluster-cxs9osnnrcdx.us-east-1.rds.amazonaws.com",
-    user="abrabant26",
-    password="Hermione26!",
-    database="sys"
-)
+    cursor = connection.cursor()
+    cursor.execute("SELECT activity_id FROM sys.activities")
+    print(cursor)
 
-cursor = connection.cursor()
+    # logged_activities = []
+    # for activity in cursor:
+    #     activity['activity_id'] = activity
+    #     logged_activities.append(activity)
+    # print(logged_activities)
+    # return logged_activities
 
-cursor.execute("CREATE TABLE activities" + table_fields)
+connect_to_db()

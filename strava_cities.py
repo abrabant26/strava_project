@@ -3,6 +3,9 @@ import urllib3
 import polyline
 from geopy.geocoders import Nominatim
 import pandas as pd
+import modules
+from sqlalchemy import create_engine
+import pymysql
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -26,17 +29,18 @@ def get_access_token():
 access_token = get_access_token()
 
 #pull my athlete data
-def get_data(access_token, per_page=2, page=1):
+def get_data(access_token, per_page=100, page=1):
     activity_url = "https://www.strava.com/api/v3/athlete/activities"
     header = {'Authorization': 'Bearer ' + access_token}
     param = {'per_page': per_page, 'page': page}
     my_dataset = requests.get(activity_url, headers=header, params=param).json()
     
-    print(my_dataset[0]["name"])
-    print(my_dataset[0]["map"]["summary_polyline"])
+    print("finished pulling the data")
     return my_dataset
 
 data = get_data(access_token)
+
+#get existing activty ids from db and filter them for only new activities in the api call
 
 # explode polyline map into coordinates and get towns/cities and states passed through for each exercise
 def add_coordinates(data):
@@ -53,10 +57,13 @@ def add_coordinates(data):
                 coordinate_pair = coordinate
                 location = geolocator.reverse(coordinate_pair)
                 address = location.raw['address']
-                if 'town' in address:
-                    town_city = address['town']
+                #print(address)
                 if 'city' in address:
                     town_city = address['city']
+                if 'town' in address:
+                    town_city = address['town']
+                if 'suburb' in address:
+                    town_city = address['suburb']
                 state = location.raw['address']['state']
                 if town_city not in town_cities:
                     town_cities.append(town_city)
@@ -82,14 +89,40 @@ def prepare_output(outside_activities):
         activity_data['distance'] = activity['distance']
         activity_data['moving_time'] = activity['moving_time']
         activity_data['towns_cities_crossed'] = activity['town_cities']
-        activity_data['num_towns_citites'] = len(activity['town_cities'])
+        activity_data['num_towns_cities'] = len(activity['town_cities'])
         activity_data['states_crossed'] = activity['states']
         activity_data['num_states'] = len(activity['states'])
         all_activities.append(activity_data)
     all_activities = pd.DataFrame.from_dict(all_activities)
+    all_activities['date'] = pd.to_datetime(all_activities['date'])
+    activity_datatypes = {
+        "activity_id":int,
+        "distance":float,
+        "moving_time":float,
+        "towns_cities_crossed":str,
+        "num_towns_cities":int,
+        "states_crossed":str,
+        "num_states":int
+    }
+
+    all_activities = all_activities.astype(activity_datatypes)
+    all_activities.info()
     print(all_activities)
     print("done formating data!")
 
     return all_activities
 
-prepare_output(outside_activities)
+activities = prepare_output(outside_activities)
+
+def insert_data(activities):
+
+    engine = create_engine("mysql+pymysql://{user}:{pw}@{host}/{db}"
+                       .format(user="abrabant26",
+                               pw="Hermione26!",
+                               host="ab-strava-data.cluster-cxs9osnnrcdx.us-east-1.rds.amazonaws.com",
+                               db="sys"))
+    # Insert whole DataFrame into MySQL
+    activities.to_sql('activities', con = engine, if_exists = 'append', index=False, chunksize = 1000)
+    print("data inserted! woo!")
+
+insert_data(activities)
