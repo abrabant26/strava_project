@@ -34,13 +34,44 @@ def get_data(access_token, per_page=100, page=1):
     header = {'Authorization': 'Bearer ' + access_token}
     param = {'per_page': per_page, 'page': page}
     my_dataset = requests.get(activity_url, headers=header, params=param).json()
-    
+
     print("finished pulling the data")
     return my_dataset
 
 data = get_data(access_token)
 
 #get existing activty ids from db and filter them for only new activities in the api call
+def get_existing_activities():
+    connection = pymysql.connect(
+        host="ab-strava-data.cluster-cxs9osnnrcdx.us-east-1.rds.amazonaws.com",
+        user="abrabant26",
+        password="Hermione26!",
+        database="sys"
+    )
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT activity_id FROM sys.activities")
+    
+    logged_activities = []
+    for activity in cursor:
+        logged_activities.append(activity[0])
+    print("got activities from db")
+    return logged_activities
+
+existing_activites = get_existing_activities()
+
+def get_new_activites(data,existing_activities):
+    new_activites = []
+    for activity in data:
+        if activity['id'] not in existing_activites:
+            new_activites.append(activity)
+            # print(activity['name'])
+        # else:
+        #     print("already got that one! " + activity['name'])
+    print("done checking for dups!")
+    return new_activites 
+
+new_activites = get_new_activites(data,existing_activites)
 
 # explode polyline map into coordinates and get towns/cities and states passed through for each exercise
 def add_coordinates(data):
@@ -72,12 +103,10 @@ def add_coordinates(data):
             activity["town_cities"] = town_cities 
             activity["states"] = states
             outside_activities.append(activity)
-    print(outside_activities[0]["map_coordinates"][0])
-    print(outside_activities[0]["name"])
     print("got coordinates!")
     return outside_activities
 
-outside_activities = add_coordinates(data)
+outside_activities = add_coordinates(new_activites)
 
 def prepare_output(outside_activities):
     all_activities = []
@@ -94,19 +123,20 @@ def prepare_output(outside_activities):
         activity_data['num_states'] = len(activity['states'])
         all_activities.append(activity_data)
     all_activities = pd.DataFrame.from_dict(all_activities)
-    all_activities['date'] = pd.to_datetime(all_activities['date'])
-    activity_datatypes = {
-        "activity_id":int,
-        "distance":float,
-        "moving_time":float,
-        "towns_cities_crossed":str,
-        "num_towns_cities":int,
-        "states_crossed":str,
-        "num_states":int
-    }
+    if len(all_activities) > 0:
+        all_activities['date'] = pd.to_datetime(all_activities['date'])
+        activity_datatypes = {
+            "activity_id":int,
+            "distance":float,
+            "moving_time":float,
+            "towns_cities_crossed":str,
+            "num_towns_cities":int,
+            "states_crossed":str,
+            "num_states":int
+        }
 
-    all_activities = all_activities.astype(activity_datatypes)
-    all_activities.info()
+        all_activities = all_activities.astype(activity_datatypes)
+        all_activities.info()
     print(all_activities)
     print("done formating data!")
 
@@ -123,6 +153,9 @@ def insert_data(activities):
                                db="sys"))
     # Insert whole DataFrame into MySQL
     activities.to_sql('activities', con = engine, if_exists = 'append', index=False, chunksize = 1000)
-    print("data inserted! woo!")
+    if len(activities) > 0:
+        print("data inserted! woo!")
+    else:
+        print("no data to insert")
 
 insert_data(activities)
