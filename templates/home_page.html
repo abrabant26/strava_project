@@ -18,7 +18,7 @@
     <div class="choose activity">
         <h3 style="text-align: center;">Please choose an activity from the dropdown to learn more about it!</h2>
         <label for="activties"></label>
-        <select name="activities" id="activity_type" style="display: block; background-color: rgb(138, 221, 232); margin: 0 auto; width: 150px; padding: 5px 35px 5px 5px; font-size: 16px; border: 1px solid #CCC; height: 34px; text-align: center;">
+        <select name="activities" id="activity_type" style="display: block; background-color: rgb(138, 221, 232); margin: 0 auto; width: 450px; padding: 5px 35px 5px 5px; font-size: 16px; border: 1px solid #CCC; height: 34px; text-align: center;">
             {% for activity in activities %}
                 <option value>{{ activity.name }}</option>
             {% endfor %}

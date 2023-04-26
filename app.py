@@ -1,16 +1,16 @@
-import flask
-from resources import sql_queries
+from flask import Flask, render_template
+from resources import sql_queries, homepage
 import static
 
 # Create the application.
-APP = flask.Flask(__name__)
+APP = Flask(__name__)
 
 
 @APP.route('/')
 def homepage():
-    """ Displays the index page accessible at '/'
-    """
-    return flask.render_template('home_page.html')
+    conn = sql_queries.connect_to_db()
+    activities = sql_queries.get_activity_names(conn)
+    return render_template('home_page.html', activities=activities)
 
 
 if __name__ == '__main__':
@@ -20,4 +20,4 @@ if __name__ == '__main__':
 @APP.route("/images/<name>")
 def images(name):
     # fullpath = url_for('static', filename=name)
-    return '<img src=' + flask.url_for('static', filename='images/{}'.format(name)) + '>'
+    return '<img src=' + Flask.url_for('static', filename='images/{}'.format(name)) + '>'

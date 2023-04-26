@@ -30,8 +30,6 @@ def get_activity_names(conn):
     activity_names = []
     for activity in cursor:
         activity_names.append({"name": activity[0]})
-    print(type(activity_names))
-    print(activity_names)
     return activity_names
 
 get_activity_names(conn)
