@@ -7,6 +7,7 @@ import modules
 from sqlalchemy import create_engine
 import pymysql
 
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 #get access token to hit strava api

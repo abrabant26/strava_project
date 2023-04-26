@@ -1,5 +1,4 @@
 import pymysql
-from sqlalchemy import create_engine
 
 def connect_to_db():
     connection = pymysql.connect(
@@ -11,13 +10,12 @@ def connect_to_db():
 
     cursor = connection.cursor()
     cursor.execute("SELECT activity_id FROM sys.activities")
-    print(cursor)
-
-    # logged_activities = []
-    # for activity in cursor:
-    #     activity['activity_id'] = activity
-    #     logged_activities.append(activity)
-    # print(logged_activities)
-    # return logged_activities
+    
+    logged_activities = []
+    for activity in cursor:
+        # print(activity)
+        logged_activities.append(activity[0])
+    print(logged_activities)
+    return logged_activities
 
 connect_to_db()
