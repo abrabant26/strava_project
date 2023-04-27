@@ -30,7 +30,7 @@ def get_access_token():
 access_token = get_access_token()
 
 #pull my athlete data
-def get_data(access_token, per_page=100, page=1):
+def get_data(access_token, per_page=3, page=1):
     activity_url = "https://www.strava.com/api/v3/athlete/activities"
     header = {'Authorization': 'Bearer ' + access_token}
     param = {'per_page': per_page, 'page': page}
@@ -64,7 +64,7 @@ existing_activites = get_existing_activities()
 def get_new_activites(data,existing_activities):
     new_activites = []
     for activity in data:
-        if activity['id'] not in existing_activites:
+        if activity['id'] not in existing_activities:
             new_activites.append(activity)
             # print(activity['name'])
         # else:
@@ -89,7 +89,6 @@ def add_coordinates(data):
                 coordinate_pair = coordinate
                 location = geolocator.reverse(coordinate_pair)
                 address = location.raw['address']
-                #print(address)
                 if 'city' in address:
                     town_city = address['city']
                 if 'town' in address:
@@ -104,6 +103,7 @@ def add_coordinates(data):
             activity["town_cities"] = town_cities 
             activity["states"] = states
             outside_activities.append(activity)
+            print(activity)
     print("got coordinates!")
     return outside_activities
 
@@ -122,6 +122,7 @@ def prepare_output(outside_activities):
         activity_data['num_towns_cities'] = len(activity['town_cities'])
         activity_data['states_crossed'] = activity['states']
         activity_data['num_states'] = len(activity['states'])
+        activity_data['map_polyline'] = activity['map']['summary_polyline']
         all_activities.append(activity_data)
     all_activities = pd.DataFrame.from_dict(all_activities)
     if len(all_activities) > 0:
@@ -133,7 +134,8 @@ def prepare_output(outside_activities):
             "towns_cities_crossed":str,
             "num_towns_cities":int,
             "states_crossed":str,
-            "num_states":int
+            "num_states":int,
+            "map_polyline": str
         }
 
         all_activities = all_activities.astype(activity_datatypes)

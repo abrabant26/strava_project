@@ -4,7 +4,7 @@
     <title>Ally's Outdoor Activities</title>
     <style>
         body {
-            background-image: images('sb_mountains.jpeg');
+            background-image: "{{ url_for('static', filename='sb-mountains.jpg') }}";
             background-size: cover;
             background-position: 20% 15%;  
             /* Add any other background styles here */
@@ -21,6 +21,7 @@
         <select name="activities" id="activity_type" style="display: block; background-color: rgb(138, 221, 232); margin: 0 auto; width: 450px; padding: 5px 35px 5px 5px; font-size: 16px; border: 1px solid #CCC; height: 34px; text-align: center;">
             {% for activity in activities %}
                 <option value>{{ activity.name }}</option>
+                    <h4>{{ activity.activity_description }}</h4>
             {% endfor %}
         </select>
     </div>

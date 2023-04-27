@@ -1,5 +1,6 @@
 from flask import Flask, render_template
-from resources import sql_queries, homepage
+from pages import homepage
+from resources import sql_queries
 import static
 
 # Create the application.
@@ -7,9 +8,8 @@ APP = Flask(__name__)
 
 
 @APP.route('/')
-def homepage():
-    conn = sql_queries.connect_to_db()
-    activities = sql_queries.get_activity_names(conn)
+def home_page():
+    activities = homepage.activity_names()
     return render_template('home_page.html', activities=activities)
 
 
