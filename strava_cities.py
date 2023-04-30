@@ -30,12 +30,11 @@ def get_access_token():
 access_token = get_access_token()
 
 #pull my athlete data
-def get_data(access_token, per_page=3, page=1):
+def get_data(access_token, per_page=200, page=1):
     activity_url = "https://www.strava.com/api/v3/athlete/activities"
     header = {'Authorization': 'Bearer ' + access_token}
     param = {'per_page': per_page, 'page': page}
     my_dataset = requests.get(activity_url, headers=header, params=param).json()
-
     print("finished pulling the data")
     return my_dataset
 
@@ -123,6 +122,7 @@ def prepare_output(outside_activities):
         activity_data['states_crossed'] = activity['states']
         activity_data['num_states'] = len(activity['states'])
         activity_data['map_polyline'] = activity['map']['summary_polyline']
+        activity_data['type'] = activity['type']
         all_activities.append(activity_data)
     all_activities = pd.DataFrame.from_dict(all_activities)
     if len(all_activities) > 0:
@@ -135,7 +135,8 @@ def prepare_output(outside_activities):
             "num_towns_cities":int,
             "states_crossed":str,
             "num_states":int,
-            "map_polyline": str
+            "map_polyline": str,
+            "type" : str
         }
 
         all_activities = all_activities.astype(activity_datatypes)

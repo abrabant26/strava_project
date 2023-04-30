@@ -26,7 +26,7 @@ def get_existing_activites(conn):
 
 def get_activity_names(conn):
     cursor = conn.cursor()
-    cursor.execute("SELECT name, date, distance, moving_time, towns_cities_crossed, num_towns_cities, states_crossed, num_states FROM sys.activities")
+    cursor.execute("SELECT name, date, distance, activity_type, towns_cities_crossed, num_towns_cities, states_crossed, num_states FROM sys.activities")
     activity_name = []
     for activity in cursor:
         activity_name.append(activity)

@@ -12,6 +12,19 @@ def activity_names():
         date = activity[1].strftime("%a %B %d, %Y")
         distance_mi = round(activity[2] * 0.000621371192, 2)
 
+        #clean activity type
+        activity_type = activity[3]
+        if activity_type == 'Bike' or activity_type =='Ride':
+            activity_type = 'biked'
+        elif activity_type == 'Run':
+            activity_type = 'ran'
+        elif activity_type == 'Hike':
+            activity_type = 'hiked'
+        elif activity_type == 'Walk':
+            activity_type = 'walked'
+        else:
+            activity_type = 'traveled'        
+
         #clean city list for printing
         city_list = activity[4].split(",")
         pattern = r"[^\w\s]"
@@ -48,19 +61,19 @@ def activity_names():
             if i != list_len - 1 and i != 0 and list_len > 1:
                 state_to_append = ", " + state
                 states_clean.append(state_to_append)
-            if i == list_len - 1 and list_len > 2:
+            elif i == list_len - 1 and list_len > 2:
                 grammer = ", and " + state
                 states_clean.append(grammer)
-            if i == list_len - 1 and list_len == 2:
+            elif i == list_len - 1 and list_len == 2:
                 grammer = " and " + state
                 states_clean.append(grammer)  
-            if list_len == 1 or i == 0:
+            elif list_len == 1 or i == 0:
                 states_clean.append(state)
             i = i + 1
         state_sentence = ''.join(states_clean)
 
         #create activity description
-        base_description = "On " + str(date) + ", I traveled " + str(distance_mi) + " miles, crossing " + str(activity[5])
+        base_description = "On " + str(date) + ", I " + activity_type + " " + str(distance_mi) + " miles, crossing " + str(activity[5])
         if activity[5] > 1:
             base_description = base_description + " towns (" + city_sentence + ")"
         if activity[5] == 1:

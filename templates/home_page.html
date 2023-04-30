@@ -10,20 +10,40 @@
             /* Add any other background styles here */
         }
     </style>
+    <script src=
+    "https://code.jquery.com/jquery-1.12.4.min.js">
+      </script>
+      <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}?build=2">
 </head>
 <body>
     <div class="header">
         <h1 style="color:cornflowerblue; text-align: center;">Welcome to my site!</h1>
     </div>
-    <div class="choose activity">
+    <div class="choose-activity">
         <h3 style="text-align: center;">Please choose an activity from the dropdown to learn more about it!</h2>
         <label for="activties"></label>
-        <select name="activities" id="activity_type" style="display: block; background-color: rgb(138, 221, 232); margin: 0 auto; width: 450px; padding: 5px 35px 5px 5px; font-size: 16px; border: 1px solid #CCC; height: 34px; text-align: center;">
+        <select class="activity-select" data-target="activity-description" style="display: block; background-color: rgb(138, 221, 232); margin: 0 auto; width: 450px; padding: 5px 35px 5px 5px; font-size: 16px; border: 1px solid #CCC; height: 34px; text-align: center;">
             {% for activity in activities %}
-                <option value>{{ activity.name }}</option>
-                    <h4>{{ activity.activity_description }}</h4>
+                <option value="{{ activity.name }}" data-description="{{ activity.activity_description }}">{{ activity.name }}</option>
             {% endfor %}
         </select>
     </div>
+    {% for activity in activities %}
+    <div data_option="{{ activity.name }}" class="activity-description">
+        <h4>{{ activity.activity_description }}</h4>
+    </div>
+    {% endfor %}
+    <script type="text/javascript">
+        $(document).on('change', '.choose-activity', function() {
+            var target = $(this).data('target');
+            var show = $("option:selected", this).data('show');
+            $(target).children().addClass('hide');
+            $(show).removeClass('hide');
+        });
+        $(document).ready(function(){
+            $('.choose-activity').trigger('change');
+        });
+    </script>
+    
  </body>
  </html>
